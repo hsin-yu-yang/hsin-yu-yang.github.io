@@ -1,0 +1,40 @@
+---
+title: "Machine Learning Algorithms: K Means Clustering"
+author: "Ella Yang"
+date: "2023-12-5"
+categories: [news, code, analysis]
+image: "thumbnail.jpg"
+---
+In this post, will dive into K-Means Clustering and implementing K Means[Reference](https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_digits.html)
+
+
+
+
+```{python}
+
+```
+
+
+```{python}
+
+```
+
+
+```{python}
+
+```
+
+
+```{python}
+
+```
+
+
+```{python}
+
+```
+
+
+```{python}
+
+```

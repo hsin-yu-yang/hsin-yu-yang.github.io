@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Harlow Malloc">
-<meta name="dcterms.date" content="2023-09-18">
+<meta name="author" content="Ella Yang">
+<meta name="dcterms.date" content="2023-10-23">
 
-<title>hsin-yu-yang.github.io - Post With Code</title>
+<title>hsin-yu-yang.github.io - Machine Learning Algorithms: Linear Regression</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -96,6 +96,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -137,7 +139,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Post With Code</h1>
+      <h1 class="title">Machine Learning Algorithms: Linear Regression</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">news</div>
                 <div class="quarto-category">code</div>
@@ -152,14 +154,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Harlow Malloc </p>
+               <p>Ella Yang </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">September 18, 2023</p>
+        <p class="date">October 23, 2023</p>
       </div>
     </div>
     
@@ -177,15 +179,202 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>This is a post with executable code.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this plot, we will apply the linear regression algorithm to predict the final grades of high school students in a math class based on various attributes. The data used for this analysis is extracted from the Student Performance dataset available at the <a href="http://archive.ics.uci.edu/dataset/320/student+performance">UCI Machine Learning Repository</a></p>
+<section id="importing-modulespackages" class="level2">
+<h2 class="anchored" data-anchor-id="importing-modulespackages">Importing Modules/Packages</h2>
+<p>Before diving into coding, we import the required modules and packages:</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn <span class="im">import</span> linear_model</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.utils <span class="im">import</span> shuffle</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> style</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pickle</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="loading-in-our-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-in-our-data">Loading in Our Data</h2>
+<p>Next, we load the dataset and display the first 5 students using the <span class="math inline">\(.head()\)</span> function</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span>pd.read_csv(<span class="st">"/Users/ella.yang/Desktop/ds499/hsin-yu-yang.github.io/data/student_mat.csv"</span>, sep<span class="op">=</span><span class="st">";"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#print(data.head())</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="trimming-our-data" class="level2">
+<h2 class="anchored" data-anchor-id="trimming-our-data">Trimming Our Data</h2>
+<p>Considering the relevance of attributes, we select the ones we want to use, resulting in a data frame with information related to only 6 attributes:</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> data[[<span class="st">"G1"</span>, <span class="st">"G2"</span>, <span class="st">"G3"</span>, <span class="st">"studytime"</span>, <span class="st">"failures"</span>, <span class="st">"absences"</span>]]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Compare to the original data</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>   G1  G2  G3  studytime  failures  absences
+0   5   6   6          2         0         6
+1   5   5   6          2         0         4
+2   7   8  10          2         3        10
+3  15  14  15          3         0         2
+4   6  10  10          2         0         4</code></pre>
+</div>
+</div>
+</section>
+<section id="separating-our-data" class="level2">
+<h2 class="anchored" data-anchor-id="separating-our-data">Separating Our Data</h2>
+<p>Now that we’ve trimmed our data set down we need to separate it into 4 arrays. However, before we can do that we need to define what attribute we are trying to predict. This attribute is known as a label. The other attributes that will determine our label are known as features. Once we’ve done this we will use numpy to create two arrays. One that contains all of our features and one that contains our labels</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>predict <span class="op">=</span> <span class="st">"G3"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.array(data.drop(columns<span class="op">=</span>[predict]))  <span class="co"># return new dataset without G3</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array(data[predict])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After this we need to split our data into testing and training data. We will use 90% of our data to train and the other 10% to test. The reason we do this is so that we do not test our model on data that it has already seen.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x_train, x_test, y_train, y_test <span class="op">=</span> sklearn.model_selection.train_test_split(X, y, test_size <span class="op">=</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We are ready to implement the linear regression algorithm</p>
+</section>
+<section id="how-does-it-work" class="level2">
+<h2 class="anchored" data-anchor-id="how-does-it-work">How Does it Work?</h2>
+<p>Linear Regression is like drawing a line through a group of points on a graph to represent their overall trend. Imagine you have some points scattered on a graph, and you want to draw a line that best fits through them.</p>
+<p>This line is defined by an equation: <span class="math inline">\(y = m*x + b\)</span>. Here, <span class="math inline">\(m\)</span> is like the steepness of the line, telling you how much the y (up and down) value changes when x (left and right) changes. And <span class="math inline">\(b\)</span> is where the line crosses the y-axis.</p>
+<p>To figure out the steepness (<span class="math inline">\(m\)</span>) of the line, you choose two points on the line and use a formula: <span class="math inline">\(m = (y2 - y1) / (x2 - x1)\)</span>. This helps in calculating how much the line slopes.</p>
+<p>Once the computer figures out this line, it can use it to make predictions for other points.</p>
+<p>Remember, the examples we talked about are like drawing lines in two-dimensional space. In real situations, lines might go in more than just left-right and up-down directions, and that’s when you get multiple slope values.</p>
+</section>
+<section id="implementing-the-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="implementing-the-algorithm">Implementing the Algorithm</h2>
+<p>Let’s use the algorithm to predict students’ final grades. We’ll start by defining the model we’ll use</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>linear <span class="op">=</span> linear_model.LinearRegression()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After defining our model, we’ll train and score it using the arrays we created earlier. We’ll assess how well our algorithm performed on our test data by measuring R-squared</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>linear.fit(x_train, y_train)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>acc <span class="op">=</span> linear.score(x_test, y_test) <span class="co">#R-squared of the model</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(acc) <span class="co">#a score of above 80% is fairly good</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.852004747478786</code></pre>
+</div>
+</div>
+</section>
+<section id="viewing-the-constants" class="level2">
+<h2 class="anchored" data-anchor-id="viewing-the-constants">Viewing The Constants</h2>
+<p>Now, let’s take a look at the constants used to generate the line</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Coefficient: </span><span class="ch">\n</span><span class="st">'</span>, linear.coef_) <span class="co"># These are each slope value</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Intercept: </span><span class="ch">\n</span><span class="st">'</span>, linear.intercept_) <span class="co"># This is the intercept</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coefficient: 
+ [ 0.1615728   0.97520329 -0.18595676 -0.22754441  0.03731939]
+Intercept: 
+ -1.5720906413133449</code></pre>
+</div>
+</div>
+</section>
+<section id="predicting-on-specific-students" class="level2">
+<h2 class="anchored" data-anchor-id="predicting-on-specific-students">Predicting on Specific Students</h2>
+<p>While seeing a score value is interesting, let’s see how well our algorithm works on specific students. We’ll print out all of our test data, along with the actual final grade and our model’s predicted grade</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> linear.predict(x_test) <span class="co"># Gets a list of all predictions</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#for x in range(len(predictions)):</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#print(predictions[x], x_test[x], y_test[x])#input data(x_test[x]), actual value for final grade (y_test[x])</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#"G1", "G2", "G3", "studytime", "failures", "absences"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="o.jpeg" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Output</figcaption>
+</figure>
+</div>
+</section>
+<section id="saving-our-model" class="level2">
+<h2 class="anchored" data-anchor-id="saving-our-model">Saving Our Model</h2>
+<p>We’ll write it to a new file using <span class="math inline">\(pickle.dump()\)</span> to save our model</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"studentgrades.pickle"</span>, <span class="st">"wb"</span>) <span class="im">as</span> f:</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    pickle.dump(linear, f)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># linear is the name of the model we created before</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># it should be defined above this</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="loading-our-model" class="level2">
+<h2 class="anchored" data-anchor-id="loading-our-model">Loading Our Model</h2>
+<p>Now, let’s remove the code that creates and trains our model as we’re simply loading in an existing one from our pickle file</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pickle_in <span class="op">=</span> <span class="bu">open</span>(<span class="st">"studentgrades.pickle"</span>, <span class="st">"rb"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>linear <span class="op">=</span> pickle.load(pickle_in)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Now we can use linear to predict grades like before</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="training-multiple-models" class="level2">
+<h2 class="anchored" data-anchor-id="training-multiple-models">Training Multiple Models</h2>
+<p>If you’ve noticed that our models show different levels of R-squared, it’s because each time we divide the data into training and testing sets, it’s done in a unique way. Given that our model trains quite swiftly, it might be beneficial to train several models and keep the best-performing one</p>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># TRAIN MODEL MULTIPLE TIMES FOR BEST SCORE</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">20</span>):</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    x_train, x_test, y_train, y_test <span class="op">=</span> sklearn.model_selection.train_test_split(X, y, test_size <span class="op">=</span> <span class="fl">0.1</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    linear <span class="op">=</span> linear_model.LinearRegression()</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    linear.fit(x_train, y_train)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    acc <span class="op">=</span> linear.score(x_test, y_test)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Accuracy: "</span> <span class="op">+</span> <span class="bu">str</span>(acc))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If the current model has a better score than one we've already trained then save it</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> acc <span class="op">&gt;</span> best:</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        best <span class="op">=</span> acc</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> <span class="bu">open</span>(<span class="st">"studentgrades.pickle"</span>, <span class="st">"wb"</span>) <span class="im">as</span> f:</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>            pickle.dump(linear, f)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>            <span class="co"># linear is the name of the model we created before</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Accuracy: 0.9307728812717458
+Accuracy: 0.9051110633425279
+Accuracy: 0.8147214378563499
+Accuracy: 0.7686144104610797
+Accuracy: 0.8469484800672369
+Accuracy: 0.8760843270223411
+Accuracy: 0.8349613171153357
+Accuracy: 0.9143829866395617
+Accuracy: 0.8163677652822097
+Accuracy: 0.8598936070391182
+Accuracy: 0.854151738455897
+Accuracy: 0.8409009718487583
+Accuracy: 0.8042917177038538
+Accuracy: 0.8146505814713763
+Accuracy: 0.859206891413676
+Accuracy: 0.887279745412528
+Accuracy: 0.8016152322489802
+Accuracy: 0.8402057693065761
+Accuracy: 0.6865875166278759
+Accuracy: 0.7896708452154113</code></pre>
+</div>
+</div>
+</section>
+<section id="plotting-our-data" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-our-data">Plotting Our Data</h2>
+<p>To visually understand our data, we’ll create plots using the matplotlib library. We’ll use a scatter plot to present our data</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drawing and plotting model</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> <span class="st">"absences"</span> <span class="co"># Change this to G1, G2, studytime or absences to see other graphs</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(data[plot], data[<span class="st">"G3"</span>]) </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(plot)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Final Grade"</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="index_files/figure-html/cell-14-output-2.png" width="597" height="429"></p>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
