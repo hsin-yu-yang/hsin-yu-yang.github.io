@@ -33,9 +33,7 @@ data = data[["famsize", "Mjob", "Fjob", "schoolsup", "famsup", "activities", "hi
 ```
 
 ## Converting Data
-As you may have noticed, many of our selected columns are not numeric. To train the K-Nearest Neighbor Classifier, we need to convert any string data into numbers. Luckily, sklearn has a method that can handle this for us.
-
-We will start by creating a label encoder object and then use that to convert non-numeric data into numbers.
+As you may have noticed, many of our selected columns are not numeric. To train the K-Nearest Neighbor Classifier, we need to convert any string data into numbers. Luckily, sklearn has a method that can handle this for us. We will start by creating a label encoder object and then use that to convert non-numeric data into numbers.
 
 ```{python}
 le = preprocessing.LabelEncoder()

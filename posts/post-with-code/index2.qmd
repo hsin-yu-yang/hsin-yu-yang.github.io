@@ -5,36 +5,112 @@ date: "2023-12-5"
 categories: [news, code, analysis]
 image: "thumbnail.jpg"
 ---
-In this post, will dive into K-Means Clustering and implementing K Means[Reference](https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_digits.html)
 
+In this post, we'll explore the concept of K-Means Clustering and walk through the process of implementing it. [Reference](https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_digits.html)
 
+## K-Means Clustering
+K-Means clustering is a type of unsupervised learning, which means it doesn't require labeled information for training. Unlike supervised learning where we provide the algorithm with labeled data, unsupervised learning, as in K-Means, focuses on understanding the inherent patterns and differences within the data points to identify distinct groups.
 
+## Supervised vs Unsupervised Algorithm
+To understand the difference between supervised and unsupervised algorithms, let's recall our previous experience with supervised learning. In supervised learning, we shared both the features (attributes) of the data and their corresponding labels (Output variable, which you're trying to predict). For example, when we were classifying the higher education of students we gave the algorithm the features of the students and we told it if the students wanted to take higher education or not. Unsupervised algorithms, on the other hand, work  with the features and don't rely on predefined output variable.
+
+## How K-Means Clustering Works
+Now, let's delve into how the K-Means clustering algorithm operates. This algorithm aims to categorize data points into K unique clusters. Here's a simplified breakdown of its steps:
+
+__Step 1__ Randomly choose K points as centroids. Centroids act as representative points for each cluster
+
+__Step 2__ Assign each data point to the closest centroid based on distance
+
+__Step 3__ Calculate the average of all points within each centroid's cluster to find the center of mass. Adjust the centroids accordingly
+
+__Step 4__ Reassign each point to the closest centroid
+
+__Step 5__ Repeat steps 3-4 until no point changes its assigned centroid
+
+K-Means clustering segments our data space into different regions, each representing a distinct class. When making predictions, the algorithm identifies the section (cluster) to which a point belongs and assigns it to that particular class.
+
+## Implementing K Means Clustering 
+We will implement the K Means algorithm to classify hand written digits
 
 ```{python}
-
+import numpy as np
+import sklearn
+from sklearn.preprocessing import scale
+from sklearn.datasets import load_digits
+from sklearn.cluster import KMeans
+from sklearn import metrics
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 ```
 
+## Loading the Dataset
+We load the dataset from the sklearn module and scale down our data using the $scale()$ function. Scaling helps convert large values into a range between -1 and 1, making calculations simpler for training
 
 ```{python}
+digits = load_digits()
+data = scale(digits.data)
+y = digits.target
 
+k = 10
+samples, features = data.shape
 ```
 
+We specify the number of clusters with the variable k and determine the number of samples and features by inspecting the dataset shape.
+
+## Scoring
+To assess our model, we use a function from the sklearn website, which computes various scores for different aspects of our model. More details about these values can be found on [website](https://scikit-learn.org/stable/modules/clustering.html#clustering-evaluation)
 
 ```{python}
-
+def bench_k_means(estimator, name, data):
+    estimator.fit(data)
+    print('%-9s\t%i\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f'
+          % (name, estimator.inertia_,
+             metrics.homogeneity_score(y, estimator.labels_),
+             metrics.completeness_score(y, estimator.labels_),
+             metrics.v_measure_score(y, estimator.labels_),
+             metrics.adjusted_rand_score(y, estimator.labels_),
+             metrics.adjusted_mutual_info_score(y,  estimator.labels_),
+             metrics.silhouette_score(data, estimator.labels_,
+                                      metric='euclidean')))
 ```
 
+## Training the Model
+To train our model, we create a K Means classifier and pass it to the function we created above for scoring and training
 
 ```{python}
-
+clf = KMeans(n_clusters=k, init="random", n_init=10)
+bench_k_means(clf, "1", data)
 ```
 
+## Visualization
+For a visual representation of how K Means works, we use Principal Component Analysis (PCA) to simplify the complexity in high-dimensional data while retaining trends and patterns. We then create a K Means classifier, fit the model to the reduced data, and plot the data points. The centroids are marked with white crosses
 
 ```{python}
+# Reduce data dimensionality using PCA
+reduced_data = PCA(n_components=2).fit_transform(data)
 
-```
+# Set the number of clusters (k)
+k = 10
 
+# Create a K Means classifier
+kmeans = KMeans(n_clusters=k, init="k-means++", n_init=4)
+#ensures a more effective initialization of cluster centers by selecting initial centroids with a strategy that enhances convergence speed and clustering accuracy
 
-```{python}
+# Fit the model to the reduced data
+kmeans.fit(reduced_data)
 
+# Plot the data points
+plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=kmeans.labels_, cmap='Paired', s=20)
+
+# Plot the centroids as white crosses
+centroids = kmeans.cluster_centers_
+plt.scatter(centroids[:, 0], centroids[:, 1], marker="x", s=100, color="w")
+
+# Set plot titles and labels
+plt.title("K-means clustering on the digits dataset (PCA-reduced data)\nCentroids are marked with white cross")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+
+# Show the plot
+plt.show()
 ```

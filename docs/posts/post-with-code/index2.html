@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ella Yang">
+<meta name="dcterms.date" content="2023-12-05">
 
-<title>hsin-yu-yang.github.io – index2</title>
+<title>hsin-yu-yang.github.io - Machine Learning Algorithms: K Means Clustering</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -60,6 +96,8 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -98,7 +136,40 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Machine Learning Algorithms: K Means Clustering</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">news</div>
+                <div class="quarto-category">code</div>
+                <div class="quarto-category">analysis</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ella Yang </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 5, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     
@@ -108,7 +179,118 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<p>In this post, we’ll explore the concept of K-Means Clustering and walk through the process of implementing it. <a href="https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_digits.html">Reference</a></p>
+<section id="k-means-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="k-means-clustering">K-Means Clustering</h2>
+<p>K-Means clustering is a type of unsupervised learning, which means it doesn’t require labeled information for training. Unlike supervised learning where we provide the algorithm with labeled data, unsupervised learning, as in K-Means, focuses on understanding the inherent patterns and differences within the data points to identify distinct groups.</p>
+</section>
+<section id="supervised-vs-unsupervised-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="supervised-vs-unsupervised-algorithm">Supervised vs Unsupervised Algorithm</h2>
+<p>To understand the difference between supervised and unsupervised algorithms, let’s recall our previous experience with supervised learning. In supervised learning, we shared both the features (attributes) of the data and their corresponding labels (Output variable, which you’re trying to predict). For example, when we were classifying the higher education of students we gave the algorithm the features of the students and we told it if the students wanted to take higher education or not. Unsupervised algorithms, on the other hand, work with the features and don’t rely on predefined output variable.</p>
+</section>
+<section id="how-k-means-clustering-works" class="level2">
+<h2 class="anchored" data-anchor-id="how-k-means-clustering-works">How K-Means Clustering Works</h2>
+<p>Now, let’s delve into how the K-Means clustering algorithm operates. This algorithm aims to categorize data points into K unique clusters. Here’s a simplified breakdown of its steps:</p>
+<p><strong>Step 1</strong> Randomly choose K points as centroids. Centroids act as representative points for each cluster</p>
+<p><strong>Step 2</strong> Assign each data point to the closest centroid based on distance</p>
+<p><strong>Step 3</strong> Calculate the average of all points within each centroid’s cluster to find the center of mass. Adjust the centroids accordingly</p>
+<p><strong>Step 4</strong> Reassign each point to the closest centroid</p>
+<p><strong>Step 5</strong> Repeat steps 3-4 until no point changes its assigned centroid</p>
+<p>K-Means clustering segments our data space into different regions, each representing a distinct class. When making predictions, the algorithm identifies the section (cluster) to which a point belongs and assigns it to that particular class.</p>
+</section>
+<section id="implementing-k-means-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="implementing-k-means-clustering">Implementing K Means Clustering</h2>
+<p>We will implement the K Means algorithm to classify hand written digits</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> scale</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_digits</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn <span class="im">import</span> metrics</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="loading-the-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-dataset">Loading the Dataset</h2>
+<p>We load the dataset from the sklearn module and scale down our data using the <span class="math inline">\(scale()\)</span> function. Scaling helps convert large values into a range between -1 and 1, making calculations simpler for training</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>digits <span class="op">=</span> load_digits()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> scale(digits.data)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> digits.target</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>samples, features <span class="op">=</span> data.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We specify the number of clusters with the variable k and determine the number of samples and features by inspecting the dataset shape.</p>
+</section>
+<section id="scoring" class="level2">
+<h2 class="anchored" data-anchor-id="scoring">Scoring</h2>
+<p>To assess our model, we use a function from the sklearn website, which computes various scores for different aspects of our model. More details about these values can be found on <a href="https://scikit-learn.org/stable/modules/clustering.html#clustering-evaluation">website</a></p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bench_k_means(estimator, name, data):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    estimator.fit(data)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'</span><span class="sc">%-9s</span><span class="ch">\t</span><span class="sc">%i</span><span class="ch">\t</span><span class="sc">%.3f</span><span class="ch">\t</span><span class="sc">%.3f</span><span class="ch">\t</span><span class="sc">%.3f</span><span class="ch">\t</span><span class="sc">%.3f</span><span class="ch">\t</span><span class="sc">%.3f</span><span class="ch">\t</span><span class="sc">%.3f</span><span class="st">'</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>          <span class="op">%</span> (name, estimator.inertia_,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>             metrics.homogeneity_score(y, estimator.labels_),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>             metrics.completeness_score(y, estimator.labels_),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>             metrics.v_measure_score(y, estimator.labels_),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>             metrics.adjusted_rand_score(y, estimator.labels_),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>             metrics.adjusted_mutual_info_score(y,  estimator.labels_),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>             metrics.silhouette_score(data, estimator.labels_,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                                      metric<span class="op">=</span><span class="st">'euclidean'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="training-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="training-the-model">Training the Model</h2>
+<p>To train our model, we create a K Means classifier and pass it to the function we created above for scoring and training</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, init<span class="op">=</span><span class="st">"random"</span>, n_init<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bench_k_means(clf, <span class="st">"1"</span>, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1           69689   0.668   0.708   0.687   0.554   0.684   0.141</code></pre>
+</div>
+</div>
+</section>
+<section id="visualization" class="level2">
+<h2 class="anchored" data-anchor-id="visualization">Visualization</h2>
+<p>For a visual representation of how K Means works, we use Principal Component Analysis (PCA) to simplify the complexity in high-dimensional data while retaining trends and patterns. We then create a K Means classifier, fit the model to the reduced data, and plot the data points. The centroids are marked with white crosses</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduce data dimensionality using PCA</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>reduced_data <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">2</span>).fit_transform(data)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the number of clusters (k)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a K Means classifier</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, init<span class="op">=</span><span class="st">"k-means++"</span>, n_init<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#ensures a more effective initialization of cluster centers by selecting initial centroids with a strategy that enhances convergence speed and clustering accuracy</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model to the reduced data</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>kmeans.fit(reduced_data)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data points</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>plt.scatter(reduced_data[:, <span class="dv">0</span>], reduced_data[:, <span class="dv">1</span>], c<span class="op">=</span>kmeans.labels_, cmap<span class="op">=</span><span class="st">'Paired'</span>, s<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the centroids as white crosses</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>centroids <span class="op">=</span> kmeans.cluster_centers_</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.scatter(centroids[:, <span class="dv">0</span>], centroids[:, <span class="dv">1</span>], marker<span class="op">=</span><span class="st">"x"</span>, s<span class="op">=</span><span class="dv">100</span>, color<span class="op">=</span><span class="st">"w"</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Set plot titles and labels</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"K-means clustering on the digits dataset (PCA-reduced data)</span><span class="ch">\n</span><span class="st">Centroids are marked with white cross"</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Principal Component 1"</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Principal Component 2"</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the plot</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="index2_files/figure-html/cell-6-output-1.png" width="600" height="467"></p>
+</div>
+</div>
 
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
